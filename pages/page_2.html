@@ -14,15 +14,15 @@
                 }
                 return response.text();
             })
-            .then(tokenData => { // Renamed 'data' to 'tokenData' for clarity
-                console.log('Fetch successful, token:', tokenData);
+            .then(token => { // Renamed 'data' to 'token' for clarity
+                console.log('Fetch successful, token:', token);
 
                 // Now that we have the token, prepare and make the second fetch call
                 const options = {
                     method: 'POST',
                     headers: {
                         // Use the retrieved token here
-                        Authorization: 'Bearer ' + tokenData.trim(), // .trim() is good for tokens
+                        Authorization: 'Bearer ' + token.trim(), // .trim() is good for tokens
                         'Content-Type': 'application/json'
                     },
                     // It's generally better to build JSON objects directly
