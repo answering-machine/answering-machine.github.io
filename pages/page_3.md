@@ -1,7 +1,6 @@
 
 <form id="myFormToSubmit" action="your_server_script.php" method="post">
     <div>
-        <label for="mySizedText">Your Text (press Enter to submit):</label><br>
         <textarea
             id="mySizedText"
             name="userText"
