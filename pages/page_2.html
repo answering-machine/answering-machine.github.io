@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>Test HTTPS Fetch</title>
+</head>
+<body>
+    <h1>Test HTTPS Fetch from a localhost</h1>
+    <p>Check the console for fetch results.</p>
+    <script>
+        fetch('https://localhost/token.txt')
+            .then(response => {
+                if (!response.ok) { // It's good practice to check if the request was successful
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(tokenData => { // Renamed 'data' to 'tokenData' for clarity
+                console.log('Fetch successful, token:', tokenData);
+
+                // Now that we have the token, prepare and make the second fetch call
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        // Use the retrieved token here
+                        Authorization: 'Bearer ' + tokenData.trim(), // .trim() is good for tokens
+                        'Content-Type': 'application/json'
+                    },
+                    // It's generally better to build JSON objects directly
+                    // and then stringify them, rather than manual string concatenation.
+                    body: JSON.stringify({
+                        model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+                        messages: [
+                            { role: "system", content: "You are a helpful assistant." },
+                            { role: "user", content: "What is a capital of Paraguay?" }
+                        ],
+                        max_tokens: 2000,
+                        prompt_truncate_len: 1500,
+                        temperature: 1,
+                        top_p: 1,
+                        top_k: 50,
+                        frequency_penalty: 0,
+                        presence_penalty: 0,
+                        repetition_penalty: 1,
+                        n: 1,
+                        ignore_eos: false,
+                        stop: "stop", // Assuming "stop" is a literal string
+                        response_format: null,
+                        stream: false,
+                        context_length_exceeded_behavior: "truncate"
+                    })
+                };
+
+                // Return the promise from the second fetch
+                return fetch('https://api.fireworks.ai/inference/v1/chat/completions', options);
+            })
+            .then(response => {
+                if (!response.ok) { // Check API response status
+                    // Try to get more error info from the API response body
+                    return response.text().then(text => { throw new Error(`API Error: ${response.status} - ${text}`) });
+                }
+                return response.json();
+            })
+            .then(apiResponse => console.log('API Response:', apiResponse)) // Renamed 'response' to 'apiResponse'
+            .catch(error => console.error('Error:', error)); // Consolidated error handling
+    </script>
+</body>
+</html>
